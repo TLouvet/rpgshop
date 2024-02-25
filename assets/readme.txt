@@ -1,0 +1,1 @@
+Les fichiers dans ce fichier ont été généré via https://www.remove.bg/ en version gratuite. Ils ne sont pas utilisables pour une version commerciale
