@@ -171,6 +171,8 @@ class ShopRenderer {
   }
 
   render() {
+    this.updatePlayerCoins();
+
     const container = document.getElementById('items-recap-list-container');
     const itemsToRender = this.isPlayingBuying ? this.shop.getItems() : this.player.getInventory().getItems();
     const documentFragment = new DocumentFragment(); // We use document Fragment to make only one appendChild update to the dom
@@ -208,16 +210,8 @@ class ShopRenderer {
       documentFragment.appendChild(hr);
     }
     // on ne veut pas du dernier hr
-
     documentFragment.removeChild(documentFragment.lastElementChild);
-
-    // if (!this.shop.getSelectedItem()) {
-    //   this.shop.setSelectedItem(this.shop.getItems()[0]);
-    //   documentFragment.getElementById(this.shop.getSelectedItem().name.replace(/ /g, '-').toLowerCase())?.classList.add('row-selected');
-    //   this.showItemDetails(this.shop.getSelectedItem());
-    // }
     this.showItemDetails(this.shop.getSelectedItem());
-
     container.replaceChildren(documentFragment);
   }
 
@@ -301,7 +295,6 @@ class ShopRenderer {
 
         this.player.money += price * this.shop.getCurrentItemQuantity();
         this.player.getInventory().removeItem(name, this.shop.getCurrentItemQuantity());
-        updatePlayerCoins();
 
         if (this.player.getInventory().getItem(name)) {
           document.getElementById('current-inv').innerHTML = this.player.getInventory().getItem(name).quantity;
@@ -311,6 +304,8 @@ class ShopRenderer {
           this.render();
         }
       }
+      this.updatePlayerCoins();
+
     });
 
     document.getElementById('minus')?.addEventListener('click', () => {
@@ -328,6 +323,11 @@ class ShopRenderer {
       document.getElementById("current-number").innerHTML = this.shop.getCurrentItemQuantity();
       document.getElementById('price').innerHTML = this.shop.getCurrentItemQuantity() * price;
     });
+  }
+
+  updatePlayerCoins() {
+    const coinsRender = document.getElementById('player-coins');
+    coinsRender.innerHTML = this.player.money;
   }
 }
 
@@ -369,7 +369,6 @@ class Shop {
     else {
       player.money -= price * this.currentItemQuantity;
       player.getInventory().addItem(name, this.currentItemQuantity);
-      updatePlayerCoins();
     }
   }
 }
@@ -380,11 +379,3 @@ const shop = new Shop(Object.values(items), player);
 // Tout ce qui va toucher au rendu de la boutique est ici
 const shopRenderer = new ShopRenderer(shop, player);
 shopRenderer.render();
-
-// On a déjà nos fonctions qui permettent de faire l'update, suppposons qu'elles sont reliées au state du player
-function updatePlayerCoins() {
-  const coinsRender = document.getElementById('player-coins');
-  coinsRender.innerHTML = player.money;
-}
-
-updatePlayerCoins();
